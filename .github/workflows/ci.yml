@@ -1,0 +1,42 @@
+# 持续集成：每次推送/PR 时自动执行
+# 顺序有讲究：先格式化检查（防风格漂移）→ clippy（防不良代码习惯）→ 测试（防逻辑回归）
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-test:
+    name: Format, Clippy and Test
+    runs-on: ubuntu-latest
+    steps:
+      # 把代码检出到 runner 上
+      - uses: actions/checkout@v4
+
+      # 安装 stable Rust 工具链，附带 rustfmt 和 clippy 组件
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      # 缓存 ~/.cargo 和 target/，让后续运行快很多
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      # 1. 格式：--check 表示只检查不修改，风格不一致直接失败
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      # 2. Lint：-D warnings 把任何警告升级为错误
+      - name: Lint with Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      # 3. 测试：目前是空的，第 3 章开始会有真正的测试
+      - name: Run tests
+        run: cargo test --all-features
