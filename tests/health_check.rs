@@ -15,5 +15,7 @@ async fn health_check_works() {
 
 async fn spawn_app() {
     let server = email::run().await.expect("failed to bind address");
-    let _ = tokio::spawn(server);
+    // JoinHandle 是一个 Future，`let _ =` 会被 clippy::let_underscore_future
+    // 拒绝；这里显式 drop = 把任务从测试中分离，让服务器在后台持续运行。
+    std::mem::drop(tokio::spawn(server));
 }

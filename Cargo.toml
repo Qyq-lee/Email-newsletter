@@ -2,7 +2,7 @@
 name = "email"
 version = "0.1.0"
 edition = "2024"
-authoes=["Kensen@qyqtech.cn"]
+authors=["Kensen@qyqtech.cn"]
 
 [lib]
 path="src/lib.rs"
@@ -14,4 +14,4 @@ name="email"
 [dependencies]
 actix-web="4.15.0"
 reqwest="0.13.4"
-tokio={version="1.53.1",feature=["macros","rt-multi-thread"]}
+tokio={version="1.53.1",features=["macros","rt-multi-thread"]}
